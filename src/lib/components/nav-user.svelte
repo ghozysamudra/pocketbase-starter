@@ -9,7 +9,9 @@
   import * as Sidebar from "$lib/components/ui/sidebar/index.js";
   import { useSidebar } from "$lib/components/ui/sidebar/index.js";
   import { goto } from "$app/navigation";
-  import { PUBLIC_POCKETBASE_URL } from "$env/static/public";
+  import { PUBLIC_POCKETBASE_URL, PUBLIC_APP_ENV } from "$env/static/public";
+
+  const isProduction = PUBLIC_APP_ENV === "production";
 
   let {
     user,
@@ -67,6 +69,7 @@
           </div>
         </DropdownMenu.Label>
         <DropdownMenu.Separator />
+        {#if !isProduction}
         <DropdownMenu.Group>
           <DropdownMenu.Item
             onclick={() => window.open(`${PUBLIC_POCKETBASE_URL}/_/`, "_blank")}
@@ -77,6 +80,7 @@
           </DropdownMenu.Item>
         </DropdownMenu.Group>
         <DropdownMenu.Separator />
+        {/if}
         <DropdownMenu.Group>
           <DropdownMenu.Item
             onclick={() => goto("/dashboard/account")}

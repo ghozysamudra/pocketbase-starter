@@ -113,18 +113,16 @@
     emailSuccess = false;
 
     try {
-      await pb.collection("users").requestEmailChange(newEmail, {
-        headers: {
-          Authorization: pb.authStore.token,
-        },
-      });
+      await pb.collection("users").requestEmailChange(newEmail);
       emailMessage =
         "Verification email sent. Please check both your current and new inboxes to confirm the change.";
       emailSuccess = true;
       newEmail = "";
     } catch (error: any) {
       console.error("Email update error:", error);
-      emailMessage = error?.message || "Failed to request email change.";
+      // PocketBase errors often have a detailed response body
+      const detail = error?.response?.message || error?.message;
+      emailMessage = detail || "Failed to request email change. Please ensure your mail server is configured.";
       emailSuccess = false;
     } finally {
       isUpdatingEmail = false;

@@ -8,7 +8,9 @@
   import * as Breadcrumb from "$lib/components/ui/breadcrumb/index.js";
   import { Separator } from "$lib/components/ui/separator/index.js";
   import * as Sidebar from "$lib/components/ui/sidebar/index.js";
-  import { PUBLIC_POCKETBASE_URL } from "$env/static/public";
+  import { PUBLIC_POCKETBASE_URL, PUBLIC_APP_ENV } from "$env/static/public";
+
+  const isProduction = PUBLIC_APP_ENV === "production";
   import { goto } from "$app/navigation";
   import ThemeToggle from "$lib/components/theme-toggle.svelte";
   import {
@@ -171,7 +173,8 @@
             </Card.Content>
           </Card.Root>
 
-          <!-- Card 2: Database Connection Info -->
+          {#if !isProduction}
+          <!-- Card 2: Database Connection Info (hidden in production) -->
           <Card.Root
             class="border-border/40 bg-card/60 backdrop-blur-md shadow-sm"
           >
@@ -207,6 +210,7 @@
               </div>
             </Card.Content>
           </Card.Root>
+          {/if}
 
           <!-- Card 3: Svelte 5 Runtime -->
           <Card.Root

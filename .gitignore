@@ -35,5 +35,5 @@ vite.config.ts.timestamp-*
 /coverage/
 
 # PocketBase (Local)
-pb_data/
+pb_data/    
 

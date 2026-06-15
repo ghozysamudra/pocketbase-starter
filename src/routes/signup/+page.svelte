@@ -19,6 +19,12 @@
 		isLoading = true;
 		errorMessage = '';
 
+		if (password.length < 8) {
+			errorMessage = 'Password must be at least 8 characters long.';
+			isLoading = false;
+			return;
+		}
+
 		if (password !== passwordConfirm) {
 			errorMessage = 'Passwords do not match.';
 			isLoading = false;
