@@ -1,6 +1,7 @@
 <script lang="ts" module>
   import BookOpenIcon from "@lucide/svelte/icons/book-open";
   import LayoutDashboard from "@lucide/svelte/icons/layout-dashboard";
+  import MessageSquareIcon from "@lucide/svelte/icons/message-square";
 
   const data = {
     navMain: [
@@ -15,8 +16,24 @@
             url: "/dashboard",
           },
           {
+            title: "Messages",
+            url: "/dashboard/messages",
+          },
+          {
             title: "Account Settings",
             url: "/dashboard/account",
+          },
+        ],
+      },
+      {
+        title: "Community",
+        url: "#",
+        icon: MessageSquareIcon,
+        isActive: false,
+        items: [
+          {
+            title: "Public Messages",
+            url: "/dashboard/messages",
           },
         ],
       },

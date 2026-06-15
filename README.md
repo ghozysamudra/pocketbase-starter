@@ -8,7 +8,7 @@ A full-stack starter application built with modern web technologies, providing a
 *   **Styling:** [Tailwind CSS v4](https://tailwindcss.com/)
 *   **UI Components:** [shadcn-svelte](https://shadcn-svelte.com/)
 *   **Icons:** [Lucide Svelte](https://lucide.dev/icons/)
-*   **Backend & Database:** [PocketBase](https://pocketbase.io/) (v0.39.3)
+*   **Backend & Database:** [PocketBase](https://pocketbase.io/) (v0.39.4)
 *   **Package Manager:** [Bun](https://bun.sh/)
 *   **Testing:** [Vitest](https://vitest.dev/) & [Playwright](https://playwright.dev/)
 
