@@ -1,5 +1,6 @@
 <script lang="ts">
   import { pb } from "$lib/pocketbase.js";
+  import { getGravatarUrl } from "$lib/utils.js";
   import { Button } from "$lib/components/ui/button/index.js";
   import * as Card from "$lib/components/ui/card/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
@@ -8,23 +9,14 @@
   import * as Breadcrumb from "$lib/components/ui/breadcrumb/index.js";
   import { Separator } from "$lib/components/ui/separator/index.js";
   import * as Sidebar from "$lib/components/ui/sidebar/index.js";
-  import { PUBLIC_POCKETBASE_URL, PUBLIC_APP_ENV } from "$env/static/public";
+  import { PUBLIC_POCKETBASE_URL } from "$env/static/public";
 
-  const isProduction = PUBLIC_APP_ENV === "production";
   import { goto } from "$app/navigation";
   import ThemeToggle from "$lib/components/theme-toggle.svelte";
   import {
-    LogOut,
     User,
-    Key,
-    Shield,
-    Sparkles,
-    CheckCircle2,
     Database,
-    Activity,
-    HardDrive,
-    Terminal,
-    Clock,
+    MessageSquare,
   } from "@lucide/svelte";
 
   // Listen to PocketBase auth store changes for reactivity in Svelte 5
@@ -47,6 +39,60 @@
   function handleLogout() {
     pb.authStore.clear();
   }
+
+  // Dashboard Stats State
+  let totalMessages = $state<number | null>(null);
+  let latestMessages = $state<any[]>([]);
+  let isLoadingStats = $state(true);
+
+  // Format timestamp relative to now
+  function formatTime(dateStr: string): string {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diff = now.getTime() - date.getTime();
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+
+    if (minutes < 1) return "just now";
+    if (minutes < 60) return `${minutes}m ago`;
+    if (hours < 24) return `${hours}h ago`;
+    if (days < 7) return `${days}d ago`;
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    });
+  }
+
+  async function loadStats() {
+    try {
+      const result = await pb.collection("messages").getList(1, 5, {
+        sort: "-created",
+        expand: "author",
+        requestKey: null,
+      });
+      totalMessages = result.totalItems;
+      latestMessages = result.items;
+    } catch (err) {
+      console.error("Failed to load dashboard stats:", err);
+    } finally {
+      isLoadingStats = false;
+    }
+  }
+
+  $effect(() => {
+    if (!currentUser) return;
+    loadStats();
+
+    // Subscribe to messages changes to keep dashboard stats updated in realtime
+    const unsubPromise = pb.collection("messages").subscribe("*", () => {
+      loadStats();
+    });
+
+    return () => {
+      unsubPromise.then((unsub) => unsub());
+    };
+  });
 </script>
 
 <svelte:head>
@@ -66,7 +112,7 @@
         email: currentUser.email,
         avatar: currentUser.avatar
           ? pb.files.getUrl(currentUser, currentUser.avatar)
-          : `https://api.dicebear.com/7.x/adventurer/svg?seed=${currentUser.email}`,
+          : getGravatarUrl(currentUser.email),
       }}
       onlogout={handleLogout}
     />
@@ -135,7 +181,7 @@
         </div>
 
         <!-- Stats Widgets Grid -->
-        <div class="grid gap-6 sm:grid-cols-3">
+        <div class="grid gap-6 sm:grid-cols-2">
           <!-- Card 1: User Profile Details -->
           <Card.Root
             class="border-border/40 bg-card/60 backdrop-blur-md shadow-sm"
@@ -173,8 +219,7 @@
             </Card.Content>
           </Card.Root>
 
-          {#if !isProduction}
-          <!-- Card 2: Database Connection Info (hidden in production) -->
+          <!-- Card 2: Database Connection Info -->
           <Card.Root
             class="border-border/40 bg-card/60 backdrop-blur-md shadow-sm"
           >
@@ -210,104 +255,86 @@
               </div>
             </Card.Content>
           </Card.Root>
-          {/if}
-
-          <!-- Card 3: Svelte 5 Runtime -->
-          <Card.Root
-            class="border-border/40 bg-card/60 backdrop-blur-md shadow-sm"
-          >
-            <Card.Header
-              class="flex flex-row items-center justify-between pb-2"
-            >
-              <div class="space-y-0.5">
-                <Card.Title class="text-base font-semibold"
-                  >System Spec</Card.Title
-                >
-                <Card.Description class="text-xs"
-                  >Framework Configuration</Card.Description
-                >
-              </div>
-              <div class="rounded-lg bg-orange-500/10 p-2 text-orange-500">
-                <Sparkles class="h-5 w-5" />
-              </div>
-            </Card.Header>
-            <Card.Content class="space-y-3 pt-2">
-              <div class="space-y-1">
-                <p class="text-xs text-muted-foreground font-medium">
-                  Rendering Mode
-                </p>
-                <p class="text-sm font-semibold text-foreground">
-                  Svelte 5 Runes ($state, $effect)
-                </p>
-              </div>
-              <div
-                class="flex items-center justify-between border-t border-border/40 pt-2 text-xs"
-              >
-                <span class="text-muted-foreground">Styling System:</span>
-                <span class="font-mono text-foreground">Tailwind v4</span>
-              </div>
-            </Card.Content>
-          </Card.Root>
         </div>
 
         <!-- Main Layout Body Section -->
         <div class="grid gap-6">
-          <!-- Database Inspector and Operations Log (full width) -->
+          <!-- Card 4: Messages Statistics & Activity (Full Size) -->
           <Card.Root
             class="border-border/40 bg-card/60 backdrop-blur-md shadow-sm"
           >
-            <Card.Header>
-              <Card.Title class="text-lg font-semibold flex items-center gap-2">
-                <Activity class="h-5 w-5 text-indigo-500" />
-                Session Activity
-              </Card.Title>
-              <Card.Description>
-                Real-time PocketBase status logs.
-              </Card.Description>
+            <Card.Header class="flex flex-row items-center justify-between pb-4">
+              <div class="space-y-1">
+                <Card.Title class="text-lg font-semibold flex items-center gap-2">
+                  <MessageSquare class="h-5 w-5 text-violet-500" />
+                  Public Messages
+                </Card.Title>
+                <Card.Description class="text-xs">
+                  Recent chat activity across all authenticated users.
+                </Card.Description>
+              </div>
+              <div class="flex items-baseline gap-2 bg-violet-500/10 text-violet-600 dark:text-violet-400 px-3 py-1.5 rounded-full text-xs font-semibold">
+                {#if isLoadingStats}
+                  <span>Loading...</span>
+                {:else}
+                  <span>{totalMessages ?? 0} total messages</span>
+                {/if}
+              </div>
             </Card.Header>
-            <Card.Content class="p-0">
-              <div
-                class="divide-y divide-border/40 text-xs max-h-[220px] overflow-y-auto"
-              >
-                <div class="p-3.5 flex items-start gap-3">
-                  <Clock
-                    class="h-4 w-4 text-muted-foreground shrink-0 mt-0.5"
-                  />
-                  <div class="space-y-1">
-                    <p class="font-medium text-foreground">
-                      User Session Authenticated
-                    </p>
-                    <p class="text-[10px] text-muted-foreground">
-                      Connected to PocketBase authStore
-                    </p>
+            <Card.Content class="space-y-4">
+              <div class="border border-border/40 rounded-lg overflow-hidden bg-background/30">
+                {#if isLoadingStats}
+                  <div class="p-6 text-center text-sm text-muted-foreground">
+                    Loading recent activity...
                   </div>
-                </div>
-                <div class="p-3.5 flex items-start gap-3">
-                  <HardDrive
-                    class="h-4 w-4 text-muted-foreground shrink-0 mt-0.5"
-                  />
-                  <div class="space-y-1">
-                    <p class="font-medium text-foreground">
-                      Synced Schema collections
-                    </p>
-                    <p class="text-[10px] text-muted-foreground">
-                      Collection client cache ready
-                    </p>
+                {:else if latestMessages.length > 0}
+                  <div class="divide-y divide-border/40 text-sm max-h-[300px] overflow-y-auto">
+                    {#each latestMessages as msg}
+                      {@const authorName = msg.expand?.author?.name || msg.expand?.author?.username || msg.expand?.author?.email || "Unknown"}
+                      <div class="p-4 flex items-start gap-3 justify-between hover:bg-muted/30 transition-colors">
+                        <div class="flex items-start gap-3 min-w-0">
+                          <img
+                            src={msg.expand?.author?.avatar 
+                              ? pb.files.getUrl(msg.expand.author, msg.expand.author.avatar) 
+                              : getGravatarUrl(msg.expand?.author?.email || "")}
+                            alt={authorName}
+                            class="h-7 w-7 rounded-full shrink-0 ring-1 ring-border/40"
+                          />
+                          <div class="space-y-1 min-w-0">
+                            <div class="flex items-center gap-2">
+                              <span class="font-semibold text-foreground text-xs">{authorName}</span>
+                              {#if currentUser && currentUser.id === msg.author}
+                                <span class="text-[9px] font-medium text-violet-500 bg-violet-500/10 px-1.5 py-0.5 rounded-full leading-none">you</span>
+                              {/if}
+                            </div>
+                            <p class="text-xs text-foreground/80 break-all leading-normal">
+                              {msg.message}
+                            </p>
+                          </div>
+                        </div>
+                        <span class="text-[10px] text-muted-foreground shrink-0 ml-2 mt-0.5">
+                          {formatTime(msg.created)}
+                        </span>
+                      </div>
+                    {/each}
                   </div>
-                </div>
-                <div class="p-3.5 flex items-start gap-3">
-                  <Terminal
-                    class="h-4 w-4 text-muted-foreground shrink-0 mt-0.5"
-                  />
-                  <div class="space-y-1">
-                    <p class="font-medium text-foreground">
-                      Console Initialized
-                    </p>
-                    <p class="text-[10px] text-muted-foreground">
-                      Svelte 5 runes bindings attached
-                    </p>
+                {:else}
+                  <div class="p-6 text-center text-sm text-muted-foreground">
+                    No messages yet. Be the first to start the conversation!
                   </div>
-                </div>
+                {/if}
+              </div>
+
+              <div class="flex justify-end pt-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  class="text-violet-500 hover:text-violet-600 border-violet-500/20 hover:bg-violet-500/10 cursor-pointer gap-2"
+                  onclick={() => goto("/dashboard/messages")}
+                >
+                  <MessageSquare class="h-4 w-4" />
+                  Go to Messages Page
+                </Button>
               </div>
             </Card.Content>
           </Card.Root>

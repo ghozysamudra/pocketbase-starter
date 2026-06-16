@@ -1,5 +1,6 @@
 <script lang="ts">
   import { pb } from "$lib/pocketbase.js";
+  import { getGravatarUrl } from "$lib/utils.js";
   import { Button } from "$lib/components/ui/button/index.js";
   import * as Card from "$lib/components/ui/card/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
@@ -190,7 +191,7 @@
         email: currentUser.email,
         avatar: currentUser.avatar
           ? pb.files.getUrl(currentUser, currentUser.avatar)
-          : `https://api.dicebear.com/7.x/adventurer/svg?seed=${currentUser.email}`,
+          : getGravatarUrl(currentUser.email),
       }}
       onlogout={handleLogout}
     />

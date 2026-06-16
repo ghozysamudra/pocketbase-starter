@@ -1,5 +1,6 @@
 <script lang="ts">
   import { pb } from "$lib/pocketbase.js";
+  import { getGravatarUrl } from "$lib/utils.js";
   import { Button } from "$lib/components/ui/button/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
   import AppSidebar from "$lib/components/app-sidebar.svelte";
@@ -47,23 +48,11 @@
   let isLoading = $state(true);
   let isSending = $state(false);
   let error = $state<string | null>(null);
-  let messagesContainer: HTMLDivElement | undefined = $state();
+  let messageInputRef = $state<HTMLInputElement | null>(null);
 
   // Edit state
   let editingId = $state<string | null>(null);
   let editText = $state("");
-
-  // Scroll to bottom of messages
-  function scrollToBottom(smooth = true) {
-    if (messagesContainer) {
-      requestAnimationFrame(() => {
-        messagesContainer?.scrollTo({
-          top: messagesContainer.scrollHeight,
-          behavior: smooth ? "smooth" : "instant",
-        });
-      });
-    }
-  }
 
   // Load initial messages
   async function loadMessages() {
@@ -71,12 +60,11 @@
       isLoading = true;
       error = null;
       const result = await pb.collection("messages").getList(1, 100, {
-        sort: "created",
+        sort: "-created",
         expand: "author",
         requestKey: null,
       });
       messages = result.items;
-      requestAnimationFrame(() => scrollToBottom(false));
     } catch (err) {
       console.error("Failed to load messages:", err);
       error = "Failed to load messages. Please try again.";
@@ -103,8 +91,7 @@
       );
       // Immediately add to local list (realtime will dedup)
       if (!messages.some((m) => m.id === created.id)) {
-        messages = [...messages, created];
-        scrollToBottom();
+        messages = [created, ...messages];
       }
     } catch (err) {
       console.error("Failed to send message:", err);
@@ -112,6 +99,7 @@
       error = "Failed to send message. Please try again.";
     } finally {
       isSending = false;
+      requestAnimationFrame(() => messageInputRef?.focus());
     }
   }
 
@@ -225,7 +213,7 @@
       name: author?.name || author?.username || author?.email || "Unknown",
       avatar: author?.avatar
         ? pb.files.getURL(author, author.avatar)
-        : `https://api.dicebear.com/7.x/adventurer/svg?seed=${author?.email || msg.author}`,
+        : getGravatarUrl(author?.email || ""),
     };
   }
 
@@ -249,8 +237,7 @@
             switch (e.action) {
               case "create":
                 if (!messages.some((m) => m.id === e.record.id)) {
-                  messages = [...messages, e.record];
-                  scrollToBottom();
+                  messages = [e.record, ...messages];
                 }
                 break;
               case "update":
@@ -289,7 +276,7 @@
         email: currentUser.email,
         avatar: currentUser.avatar
           ? pb.files.getURL(currentUser, currentUser.avatar)
-          : `https://api.dicebear.com/7.x/adventurer/svg?seed=${currentUser.email}`,
+          : getGravatarUrl(currentUser.email),
       }}
       onlogout={handleLogout}
     />
@@ -336,7 +323,7 @@
       </header>
 
       <!-- Content Area -->
-      <div class="flex flex-1 flex-col h-[calc(100vh-4rem)]">
+      <div class="flex flex-1 flex-col h-[calc(100vh-4rem)] relative">
         <!-- Messages Header -->
         <div class="px-6 py-4 border-b border-border/40">
           <div class="flex items-center gap-3">
@@ -357,7 +344,6 @@
 
         <!-- Messages List -->
         <div
-          bind:this={messagesContainer}
           class="flex-1 overflow-y-auto px-6 py-4 space-y-1"
         >
           {#if isLoading}
@@ -504,7 +490,7 @@
 
         <!-- Compose Area -->
         <div
-          class="border-t border-border/40 px-6 py-4 bg-card/20 backdrop-blur-sm"
+          class="sticky bottom-0 z-10 border-t border-border/40 px-6 py-4 bg-background/95 backdrop-blur-sm"
         >
           <form
             onsubmit={(e) => {
@@ -516,12 +502,13 @@
             <img
               src={currentUser.avatar
                 ? pb.files.getURL(currentUser, currentUser.avatar)
-                : `https://api.dicebear.com/7.x/adventurer/svg?seed=${currentUser.email}`}
+                : getGravatarUrl(currentUser.email)}
               alt="Your avatar"
               class="h-8 w-8 rounded-full shrink-0 ring-1 ring-border/40 hidden sm:block"
             />
             <div class="flex-1 relative">
               <Input
+                bind:ref={messageInputRef}
                 bind:value={newMessage}
                 onkeydown={handleKeydown}
                 placeholder="Type a message..."
