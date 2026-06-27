@@ -1,8 +1,9 @@
 <script lang="ts">
   import { pb } from "$lib/pocketbase.js";
   import { Button } from "$lib/components/ui/button/index.js";
-  import { Sparkles, Shield, Key } from "@lucide/svelte";
+  import { Sparkles, Shield, Key, Database } from "@lucide/svelte";
   import { goto } from "$app/navigation";
+  import { PUBLIC_POCKETBASE_URL } from "$env/static/public";
   import ThemeToggle from "$lib/components/theme-toggle.svelte";
 
   // Listen to PocketBase auth store changes for reactivity in Svelte 5
@@ -69,8 +70,8 @@
         <p class="text-xs text-muted-foreground text-center mt-1">Lightweight, instant real-time data sync.</p>
       </div>
     </div>
-
     <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+
       {#if currentUser}
         <Button href="/dashboard" size="lg" class="w-full sm:w-auto font-semibold px-8 gap-2 shadow-lg shadow-primary/10">
           Go to Dashboard
@@ -83,6 +84,13 @@
           Create Account
         </Button>
       {/if}
+    </div>
+
+    <div class="flex justify-center">
+      <Button href={PUBLIC_POCKETBASE_URL + "/_/"} variant="ghost" size="sm" target="_blank" rel="noreferrer" class="text-xs gap-1.5 text-muted-foreground">
+        <Database class="h-3.5 w-3.5" />
+        Admin Panel
+      </Button>
     </div>
   </div>
 </div>

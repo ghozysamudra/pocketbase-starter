@@ -37,3 +37,6 @@ vite.config.ts.timestamp-*
 # PocketBase (Local)
 pb_data/    
 
+
+# ShipStudio metadata
+.shipstudio/
