@@ -61,7 +61,7 @@
 <script lang="ts">
   import NavMain from "./nav-main.svelte";
   import NavUser from "./nav-user.svelte";
-  import * as Sidebar from "$lib/components/ui/sidebar/index.js";
+  import * as Sidebar from "#lib/components/ui/sidebar/index.js";
   import CommandIcon from "@lucide/svelte/icons/command";
   import type { ComponentProps } from "svelte";
 

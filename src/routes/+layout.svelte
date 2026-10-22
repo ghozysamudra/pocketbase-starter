@@ -1,7 +1,7 @@
 <script lang="ts">
 	import './layout.css';
-	import favicon from '$lib/assets/favicon.svg';
-	import { themeState } from '$lib/theme.svelte.js';
+	import favicon from '#lib/assets/favicon.svg';
+	import { themeState } from '#lib/theme.svelte.js';
 
 	let { children } = $props();
 </script>

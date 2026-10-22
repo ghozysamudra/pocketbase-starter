@@ -1,13 +1,13 @@
 <script lang="ts">
-  import { pb } from "$lib/pocketbase.js";
-  import { getGravatarUrl } from "$lib/utils.js";
-  import { Button } from "$lib/components/ui/button/index.js";
-  import { Input } from "$lib/components/ui/input/index.js";
-  import AppSidebar from "$lib/components/app-sidebar.svelte";
-  import * as Breadcrumb from "$lib/components/ui/breadcrumb/index.js";
-  import { Separator } from "$lib/components/ui/separator/index.js";
-  import * as Sidebar from "$lib/components/ui/sidebar/index.js";
-  import ThemeToggle from "$lib/components/theme-toggle.svelte";
+  import { pb } from "#lib/pocketbase.js";
+  import { getGravatarUrl } from "#lib/utils.js";
+  import { Button } from "#lib/components/ui/button/index.js";
+  import { Input } from "#lib/components/ui/input/index.js";
+  import AppSidebar from "#lib/components/app-sidebar.svelte";
+  import * as Breadcrumb from "#lib/components/ui/breadcrumb/index.js";
+  import { Separator } from "#lib/components/ui/separator/index.js";
+  import * as Sidebar from "#lib/components/ui/sidebar/index.js";
+  import ThemeToggle from "#lib/components/theme-toggle.svelte";
   import { goto } from "$app/navigation";
   import { untrack } from "svelte";
   import {

@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { pb } from "$lib/pocketbase.js";
-  import { Button } from "$lib/components/ui/button/index.js";
+  import { pb } from "#lib/pocketbase.js";
+  import { Button } from "#lib/components/ui/button/index.js";
   import { Sparkles, Shield, Key, Database } from "@lucide/svelte";
   import { goto } from "$app/navigation";
-  import { PUBLIC_POCKETBASE_URL } from "$env/static/public";
-  import ThemeToggle from "$lib/components/theme-toggle.svelte";
+  import { PUBLIC_POCKETBASE_URL } from "$app/env/public";
+  import ThemeToggle from "#lib/components/theme-toggle.svelte";
 
   // Listen to PocketBase auth store changes for reactivity in Svelte 5
   let currentUser = $state(pb.authStore.isValid ? pb.authStore.record : null);

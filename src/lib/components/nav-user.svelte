@@ -4,12 +4,12 @@
   import LogOutIcon from "@lucide/svelte/icons/log-out";
   import DatabaseIcon from "@lucide/svelte/icons/database";
 
-  import * as Avatar from "$lib/components/ui/avatar/index.js";
-  import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
-  import * as Sidebar from "$lib/components/ui/sidebar/index.js";
-  import { useSidebar } from "$lib/components/ui/sidebar/index.js";
+  import * as Avatar from "#lib/components/ui/avatar/index.js";
+  import * as DropdownMenu from "#lib/components/ui/dropdown-menu/index.js";
+  import * as Sidebar from "#lib/components/ui/sidebar/index.js";
+  import { useSidebar } from "#lib/components/ui/sidebar/index.js";
   import { goto } from "$app/navigation";
-  import { PUBLIC_POCKETBASE_URL } from "$env/static/public";
+  import { PUBLIC_POCKETBASE_URL } from "$app/env/public";
 
   let {
     user,

@@ -4,18 +4,20 @@ A full-stack starter application built with modern web technologies, providing a
 
 ## Tech Stack
 
-*   **Frontend Framework:** [SvelteKit](https://kit.svelte.dev/) (Svelte 5)
+*   **Frontend Framework:** [SvelteKit](https://svelte.dev/docs/kit) 3 (Svelte 5)
 *   **Styling:** [Tailwind CSS v4](https://tailwindcss.com/)
 *   **UI Components:** [shadcn-svelte](https://shadcn-svelte.com/)
 *   **Icons:** [Lucide Svelte](https://lucide.dev/icons/)
-*   **Backend & Database:** [PocketBase](https://pocketbase.io/) (v0.39.4)
+*   **Backend & Database:** [PocketBase](https://pocketbase.io/) public instance (`v0.40.6-dev`)
 *   **Package Manager:** [Bun](https://bun.sh/)
-*   **Testing:** [Vitest](https://vitest.dev/) & [Playwright](https://playwright.dev/)
+*   **Testing:** [Vitest 5](https://vitest.dev/) & [Playwright](https://playwright.dev/)
 
 ## Features
 
 *   **Authentication:** User login and signup flows integrated with PocketBase.
 *   **Dashboard Layout:** An inset sidebar layout for the dashboard using shadcn-svelte.
+*   **Realtime Messages:** Public message board with realtime updates, editing, and deletion.
+*   **Account Settings:** Profile, avatar, email, and password management.
 *   **Theming:** Dark and light mode toggle.
 *   **Modern Styling:** Built with the latest Tailwind CSS v4.
 
@@ -23,7 +25,7 @@ A full-stack starter application built with modern web technologies, providing a
 
 ### 1. Prerequisites
 
-Make sure you have [Bun](https://bun.sh/) installed on your machine.
+Make sure you have [Bun](https://bun.sh/) and Node.js 22.17+ installed.
 
 ### 2. Installation
 
@@ -35,9 +37,21 @@ bun install
 
 ### 3. PocketBase Setup
 
-This project assumes you have a PocketBase instance running. By default, it connects to `http://127.0.0.1:8090`. 
+This project is pre-configured to use the public PocketBase instance at
+`https://pocketbase.io` (`v0.40.6-dev`), so no local PocketBase server is
+required.
 
-To run PocketBase locally or point to a different URL, update the PocketBase client initialization in your source code.
+To point the app at a different PocketBase server, copy the example
+environment file and update the URL:
+
+```sh
+cp .env.example .env
+# then edit PUBLIC_POCKETBASE_URL in .env
+```
+
+> The public instance is shared and public. Do not store sensitive or
+> production data in it. For real applications, run or deploy your own
+> PocketBase instance and set `PUBLIC_POCKETBASE_URL` accordingly.
 
 ### 4. Development Server
 
@@ -48,6 +62,25 @@ bun run dev
 
 # or start the server and open the app in a new browser tab
 bun run dev -- --open
+```
+
+## Testing
+
+```sh
+bun run test
+```
+
+The test suite uses Vitest in both browser (Playwright/Chromium) and Node
+environments. Install the Playwright browser once if needed:
+
+```sh
+bunx playwright install chromium
+```
+
+You can also run type checks:
+
+```sh
+bun run check
 ```
 
 ## Building for Production
@@ -65,4 +98,3 @@ bun run preview
 ```
 
 > Note: To deploy your app, you may need to configure an [adapter](https://svelte.dev/docs/kit/adapters) appropriate for your target hosting environment. Currently uses `@sveltejs/adapter-auto`.
-

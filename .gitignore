@@ -28,6 +28,7 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
 # Testing
+.vitest/
 /test-results/
 /playwright-report/
 /blob-report/

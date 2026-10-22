@@ -9,7 +9,7 @@ vi.mock('$app/navigation', () => ({
 }));
 
 // Mock PocketBase SDK calls
-vi.mock('$lib/pocketbase.js', () => {
+vi.mock('#lib/pocketbase.js', () => {
 	return {
 		pb: {
 			collection: vi.fn().mockReturnValue({
@@ -31,7 +31,7 @@ vi.mock('$lib/pocketbase.js', () => {
 
 describe('Login Page Component', () => {
 	it('should render email and password input fields', async () => {
-		render(Login);
+		await render(Login);
 
 		// Expect the card header text to be visible
 		await expect.element(page.getByText('Welcome back')).toBeInTheDocument();
@@ -45,7 +45,7 @@ describe('Login Page Component', () => {
 	});
 
 	it('should allow typing email and password', async () => {
-		render(Login);
+		await render(Login);
 
 		const emailInput = page.getByLabelText('Email address');
 		const passwordInput = page.getByLabelText('Password');

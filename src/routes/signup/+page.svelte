@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { pb } from '$lib/pocketbase.js';
-	import { Button } from '$lib/components/ui/button/index.js';
-	import { Input } from '$lib/components/ui/input/index.js';
-	import { Label } from '$lib/components/ui/label/index.js';
-	import * as Card from '$lib/components/ui/card/index.js';
+	import { pb } from '#lib/pocketbase.js';
+	import { Button } from '#lib/components/ui/button/index.js';
+	import { Input } from '#lib/components/ui/input/index.js';
+	import { Label } from '#lib/components/ui/label/index.js';
+	import * as Card from '#lib/components/ui/card/index.js';
 	import { goto } from '$app/navigation';
 	import { User, Mail, Lock, UserPlus, AlertCircle } from '@lucide/svelte';
 
