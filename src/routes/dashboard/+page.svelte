@@ -13,6 +13,7 @@
 
   import { goto } from "$app/navigation";
   import ThemeToggle from "#lib/components/theme-toggle.svelte";
+  import AppFooter from "#lib/components/app-footer.svelte";
   import {
     User,
     Database,
@@ -339,6 +340,8 @@
             </Card.Content>
           </Card.Root>
         </div>
+
+        <AppFooter class="mt-auto" />
       </div>
     </Sidebar.Inset>
   </Sidebar.Provider>

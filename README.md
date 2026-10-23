@@ -1,5 +1,7 @@
 # PocketBase Starter
 
+**Version 0.0.2** · [GitHub repository](https://github.com/ghozysamudra/pocketbase-starter)
+
 A full-stack starter application built with modern web technologies, providing a solid foundation for applications requiring authentication, a database, and a beautiful UI.
 
 ## Tech Stack

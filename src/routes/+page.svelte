@@ -5,6 +5,7 @@
   import { goto } from "$app/navigation";
   import { PUBLIC_POCKETBASE_URL } from "$app/env/public";
   import ThemeToggle from "#lib/components/theme-toggle.svelte";
+  import AppFooter from "#lib/components/app-footer.svelte";
 
   // Listen to PocketBase auth store changes for reactivity in Svelte 5
   let currentUser = $state(pb.authStore.isValid ? pb.authStore.record : null);
@@ -29,7 +30,7 @@
   <meta name="description" content="SvelteKit and PocketBase starter template" />
 </svelte:head>
 
-<div class="relative flex min-h-[85vh] flex-col items-center justify-center px-4 py-12 overflow-hidden bg-background">
+<div class="relative flex min-h-svh flex-col items-center px-4 py-12 overflow-hidden bg-background">
   <!-- Theme Toggle Floating Position -->
   <div class="absolute top-6 right-6 z-20">
     <ThemeToggle />
@@ -39,6 +40,7 @@
   <div class="absolute -top-40 -left-40 -z-10 h-96 w-96 rounded-full bg-primary/10 blur-3xl"></div>
   <div class="absolute -bottom-40 -right-40 -z-10 h-96 w-96 rounded-full bg-primary/5 blur-3xl"></div>
 
+  <main class="flex w-full flex-1 flex-col items-center justify-center">
   <div class="text-center space-y-8 max-w-2xl px-4">
     <div class="space-y-4">
       <div class="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-semibold text-primary">
@@ -93,4 +95,7 @@
       </Button>
     </div>
   </div>
+  </main>
+
+  <AppFooter class="relative z-10 mt-8 max-w-2xl" />
 </div>
